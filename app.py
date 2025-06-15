@@ -337,7 +337,7 @@ with st.sidebar:
 
 # --- メイン画面 ---
 st.markdown("<style>h1{font-size: 1.8rem;}</style>", unsafe_allow_html=True)
-st.title("Streamlit 青鬼風ゲーム")
+st.title("青鬼風ゲーム_by_mk")
 st.caption("鬼から逃げながら鍵を見つけ、屋敷から脱出せよ！")
 
 if st.session_state.game_over: st.error(st.session_state.message)
