@@ -3,8 +3,8 @@ import numpy as np
 import random
 
 # --- ゲームの設定 ---
-MAP_WIDTH = 15
-MAP_HEIGHT = 10
+MAP_WIDTH = 10
+MAP_HEIGHT = 20
 WALL = "🧱"
 FLOOR = "⬛"
 PLAYER = "🏃"
