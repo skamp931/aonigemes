@@ -296,4 +296,3 @@ if st.session_state.difficulty == "むずかしい":
         st.session_state.trap_count -= 1
         st.session_state.message = "床に罠を設置した。"
         st.rerun()
-�
