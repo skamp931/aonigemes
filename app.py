@@ -92,7 +92,7 @@ def display_map():
     
     # HTMLの<pre>タグを使って等幅フォントで表示。CSSでスタイルを調整
     map_str = "\n".join(["".join(row) for row in display_map_data])
-    st.markdown(f"<pre class='game-map'>{map_str}</pre>", unsafe_allow_html=True)
+    st.markdown(f"<div class='game-map-container'><pre class='game-map'>{map_str}</pre></div>", unsafe_allow_html=True)
 
 
 def move_player(dx, dy):
@@ -226,21 +226,28 @@ with st.sidebar:
 st.title("Streamlit 青鬼風ゲーム")
 st.caption("鬼から逃げながら鍵を見つけ、屋敷から脱出せよ！")
 
-# ゲームマップの表示スタイルをCSSで定義（スマホ対応）
+# ゲームマップの表示スタイルをCSSで定義（PC/スマホ両対応）
 st.markdown("""
 <style>
+.game-map-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
 .game-map {
     font-family: monospace;
-    font-size: clamp(12px, 4.5vw, 22px); /* 画面幅に応じて文字サイズを調整 */
-    line-height: 1.0;                  /* 行間を詰めてグリッド感を出す */
-    white-space: pre;                  /* 文字の自動折り返しを防ぐ */
-    overflow-x: auto;                  /* マップがはみ出た時だけ横スクロールを許可 */
-    text-align: left;                  /* 左揃えで表示崩れを防ぐ */
-    margin: 0 auto;                    /* ブロック全体を中央に配置 */
-    max-width: 100%;                   /* 親要素の幅を超えないようにする */
+    /* 画面幅に応じて文字サイズを調整しつつ、最大サイズを抑える */
+    font-size: clamp(14px, 3vw, 20px); 
+    line-height: 1.2;
+    white-space: pre;
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 10px;
+    background-color: #0e1117; /* Streamlitのダークテーマに合わせた背景色 */
+    display: inline-block;
+    box-sizing: content-box;
+    /* マップがコンテナからはみ出た場合のみスクロール */
+    overflow: auto; 
 }
 </style>
 """, unsafe_allow_html=True)
