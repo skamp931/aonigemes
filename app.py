@@ -226,9 +226,9 @@ st.caption("鬼から逃げながら鍵を見つけ、屋敷から脱出せよ�
 # ゲームマップと移動キーの表示スタイルをCSSで定義
 st.markdown("""
 <style>
-/* Streamlitのメインブロックの幅を固定 */
+/* Streamlitのメインブロックの幅を画面に合わせる */
 .main .block-container {
-    max-width: 450px;
+    max-width: 100%;
     padding-left: 1rem;
     padding-right: 1rem;
 }
@@ -237,41 +237,48 @@ st.markdown("""
 .game-map-container {
     display: flex;
     justify-content: center;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin: 1rem 0;
 }
 
 /* マップ本体のスタイル */
 .game-map {
     font-family: monospace;
-    font-size: 20px; /* PCでもスマホでも見やすい固定サイズ */
+    font-size: clamp(16px, 5vw, 24px); /* 画面幅に応じて文字サイズを柔軟に調整 */
     line-height: 1.2;
     white-space: pre;
     border: 1px solid #ddd;
     border-radius: 5px;
-    padding: 10px;
+    padding: 8px;
     background-color: #0e1117;
     display: inline-block;
+    overflow-x: auto; /* マップがはみ出た場合のみ横スクロール */
+}
+
+/* 移動ボタン全体のコンテナ */
+.st-emotion-cache-1jicfl2 {
+    width: 100%;
+    max-width: 500px; /* PCでのボタンの最大幅を制限 */
+    margin: 0 auto; /* 中央揃え */
 }
 
 /* st.columnsで生成されるボタン群の親要素 */
 div[data-testid="stHorizontalBlock"] {
     display: flex;
     flex-wrap: nowrap; /* 折り返しを禁止 */
-    justify-content: space-between;
+    gap: 8px; /* ボタン間のスペースを確保 */
 }
 
 /* st.columnsで生成される各ボタンのカラム */
 div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
     flex: 1; /* 各カラムが均等にスペースを分け合う */
     min-width: 0;
-    margin: 0 4px; /* ボタン間のスペース */
 }
 
 .stButton>button {
     width: 100%;
     height: 3.5em; /* ボタンの高さを確保 */
-    font-size: 1.2em; /* ボタンの絵文字を大きく */
+    font-size: 1.5em; /* ボタンの絵文字を大きく */
+    padding: 0;
 }
 
 </style>
@@ -291,7 +298,7 @@ display_map()
 
 # 移動ボタン
 st.write("---")
-st.write("**移動**")
+st.write("<div style='text-align: center;'><b>移動</b></div>", unsafe_allow_html=True)
 is_control_disabled = st.session_state.game_over or st.session_state.win
 b_col1, b_col2, b_col3, b_col4 = st.columns(4)
 
