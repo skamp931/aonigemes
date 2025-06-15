@@ -205,14 +205,20 @@ with st.sidebar:
     if st.button("リスタート", use_container_width=True):
         restart_game()
         
-    with st.expander("ゲームのルール (Q&A)", expanded=False):
+    with st.expander("ゲームのルール (Q&A)", expanded=True):
         st.markdown("""
         **Q. このゲームの目的は？** A. 鬼（👹）に捕まらずに、鍵（🔑）を見つけて出口（🚪）から脱出することです。
+
         **Q. どうやって操作するの？** A. メイン画面下部の矢印ボタン（◀ ▲ ▼ ▶）をクリックして移動します。
+
         **Q. 難易度の違いは？** A. 鬼の動く速さが変わります。
         - **やさしい**: プレイヤーが2回動くと鬼が1回動きます。
         - **ふつう**: プレイヤーが1回動くと鬼も1回動きます。
         - **むずかしい**: プレイヤーが1回動くと鬼は2回動きます。
+        """)
+
+    with st.expander("障害物（🌲）について", expanded=False):
+        st.markdown("""
         **Q. 障害物（🌲）って何？** A. ゲームを1回クリアするごとに増える壁です。プレイヤーも鬼も通り抜けることはできません。
         """)
 
@@ -225,13 +231,16 @@ st.markdown("""
 <style>
 .game-map {
     font-family: monospace;
-    font-size: clamp(12px, 5vw, 24px); /* 画面幅に応じて文字サイズを自動調整 */
-    line-height: 1.1;
-    overflow-x: auto; /* マップが画面に収まらない場合のみスクロール */
-    text-align: center;
+    font-size: clamp(12px, 4.5vw, 22px); /* 画面幅に応じて文字サイズを調整 */
+    line-height: 1.0;                  /* 行間を詰めてグリッド感を出す */
+    white-space: pre;                  /* 文字の自動折り返しを防ぐ */
+    overflow-x: auto;                  /* マップがはみ出た時だけ横スクロールを許可 */
+    text-align: left;                  /* 左揃えで表示崩れを防ぐ */
+    margin: 0 auto;                    /* ブロック全体を中央に配置 */
+    max-width: 100%;                   /* 親要素の幅を超えないようにする */
     border: 1px solid #ddd;
     border-radius: 5px;
-    padding: 5px;
+    padding: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
