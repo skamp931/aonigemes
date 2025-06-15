@@ -5,8 +5,8 @@ import time
 from collections import deque
 
 # --- ゲームの設定 ---
-MAP_WIDTH = 16
-MAP_HEIGHT = 15
+MAP_WIDTH = 18
+MAP_HEIGHT = 14
 WALL = "🧱"
 FLOOR = "⬛"
 PLAYER = "🏃"
