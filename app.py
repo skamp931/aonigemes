@@ -16,7 +16,7 @@ OBSTACLE = "🌲"
 TRAP = "🪤"  # 罠のアイコン
 INITIAL_PLAYER_POS = [1, 1]
 INITIAL_ONI_POS = [MAP_WIDTH - 2, MAP_HEIGHT - 2] # [14, 13]
-KEY_POS = [7, 5]
+KEY_POS = [6, 5] # 壁と重ならないように位置を修正
 EXIT_POS = [MAP_WIDTH - 2, 1] # [14, 1]
 
 
@@ -291,8 +291,9 @@ with b_col4:
 # 罠設置ボタン (「むずかしい」モード限定)
 if st.session_state.difficulty == "むずかしい":
     trap_button_disabled = (st.session_state.trap_count <= 0 or st.session_state.trap_pos is not None or is_control_disabled)
-    if st.button("🪤 罠を設置", use_container_width=True, disabled=trap_button_disabled):
+    if st.button("� 罠を設置", use_container_width=True, disabled=trap_button_disabled):
         st.session_state.trap_pos = list(st.session_state.player_pos)
         st.session_state.trap_count -= 1
         st.session_state.message = "床に罠を設置した。"
         st.rerun()
+�
