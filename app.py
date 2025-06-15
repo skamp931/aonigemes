@@ -90,7 +90,6 @@ def display_map():
     exit_icon = EXIT_UNLOCKED if st.session_state.has_key else EXIT_LOCKED
     display_map_data[ey][ex] = exit_icon
     
-    # HTMLの<pre>タグを使って等幅フォントで表示。CSSでスタイルを調整
     map_str = "\n".join(["".join(row) for row in display_map_data])
     st.markdown(f"<div class='game-map-container'><pre class='game-map'>{map_str}</pre></div>", unsafe_allow_html=True)
 
@@ -227,9 +226,9 @@ st.caption("鬼から逃げながら鍵を見つけ、屋敷から脱出せよ�
 # ゲームマップと移動キーの表示スタイルをCSSで定義
 st.markdown("""
 <style>
-/* Streamlitのメインブロックの幅を調整 */
+/* Streamlitのメインブロックの幅を固定 */
 .main .block-container {
-    max-width: 700px;
+    max-width: 450px;
     padding-left: 1rem;
     padding-right: 1rem;
 }
@@ -245,7 +244,7 @@ st.markdown("""
 /* マップ本体のスタイル */
 .game-map {
     font-family: monospace;
-    font-size: 1.5em; /* 固定サイズで見やすく */
+    font-size: 20px; /* PCでもスマホでも見やすい固定サイズ */
     line-height: 1.2;
     white-space: pre;
     border: 1px solid #ddd;
@@ -253,19 +252,26 @@ st.markdown("""
     padding: 10px;
     background-color: #0e1117;
     display: inline-block;
-    overflow: auto; /* はみ出した場合のみスクロール */
 }
 
-/* 移動ボタンのコンテナ (スマホでの縦並び防止) */
-div[data-testid="column"] {
+/* st.columnsで生成されるボタン群の親要素 */
+div[data-testid="stHorizontalBlock"] {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    flex-wrap: nowrap; /* 折り返しを禁止 */
+    justify-content: space-between;
 }
+
+/* st.columnsで生成される各ボタンのカラム */
+div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+    flex: 1; /* 各カラムが均等にスペースを分け合う */
+    min-width: 0;
+    margin: 0 4px; /* ボタン間のスペース */
+}
+
 .stButton>button {
     width: 100%;
-    height: 3em;
+    height: 3.5em; /* ボタンの高さを確保 */
+    font-size: 1.2em; /* ボタンの絵文字を大きく */
 }
 
 </style>
