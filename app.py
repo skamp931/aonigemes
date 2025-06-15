@@ -14,9 +14,9 @@ EXIT_LOCKED = "🚪"
 EXIT_UNLOCKED = "🟩"
 OBSTACLE = "🌲" # 新しい障害物
 INITIAL_PLAYER_POS = [1, 1]
-INITIAL_ONI_POS = [MAP_WIDTH - 2, MAP_HEIGHT - 2]
+INITIAL_ONI_POS = [MAP_WIDTH - 2, MAP_HEIGHT - 2] # [8, 18]
 KEY_POS = [7, 5]
-EXIT_POS = [MAP_WIDTH - 1, 1]
+EXIT_POS = [MAP_WIDTH - 1, 1] # [9, 1]
 
 
 def generate_map(clear_count):
@@ -27,11 +27,11 @@ def generate_map(clear_count):
     game_map[:, 0] = WALL
     game_map[:, -1] = WALL
 
-    # 内部の壁を追加
+    # 内部の壁を追加 (サイズ変更に合わせて調整)
     game_map[3, 3:8] = WALL
-    game_map[3:7, 7] = WALL
     game_map[6, 3:8] = WALL
-    game_map[3:7, 3] = WALL
+    game_map[10, 1:5] = WALL
+    game_map[14, 4:9] = WALL
     
     # --- 障害物の配置 ---
     possible_obstacle_positions = []
@@ -40,7 +40,7 @@ def generate_map(clear_count):
             if game_map[y][x] == FLOOR and [x, y] not in [INITIAL_PLAYER_POS, INITIAL_ONI_POS, KEY_POS, EXIT_POS]:
                 possible_obstacle_positions.append([x, y])
     
-    num_obstacles = min(clear_count, 15)
+    num_obstacles = min(clear_count, 25) # 最大障害物数を調整
     
     if num_obstacles > 0 and len(possible_obstacle_positions) >= num_obstacles:
         obstacle_positions = random.sample(possible_obstacle_positions, num_obstacles)
@@ -91,7 +91,8 @@ def display_map():
     display_map_data[ey][ex] = exit_icon
     
     map_str = "\n".join(["".join(row) for row in display_map_data])
-    st.markdown(f"<div class='game-map-container'><pre class='game-map'>{map_str}</pre></div>", unsafe_allow_html=True)
+    # st.codeを使用して、レイアウト崩れを防ぐ
+    st.code(map_str, language=None)
 
 
 def move_player(dx, dy):
@@ -184,7 +185,7 @@ def restart_game():
 
 
 # --- メインのUI ---
-st.set_page_config(page_title="Streamlit 青鬼", layout="wide")
+st.set_page_config(page_title="Streamlit 青鬼")
 initialize_game()
 
 # --- サイドバー (設定と情報) ---
@@ -204,7 +205,7 @@ with st.sidebar:
     if st.button("リスタート", use_container_width=True):
         restart_game()
         
-    with st.expander("ゲームのルール (Q&A)", expanded=True):
+    with st.expander("ゲームのルール (Q&A)", expanded=False):
         st.markdown("""
         **Q. このゲームの目的は？** A. 鬼（👹）に捕まらずに、鍵（🔑）を見つけて出口（🚪）から脱出することです。
         **Q. どうやって操作するの？** A. メイン画面下部の矢印ボタン（◀ ▲ ▼ ▶）をクリックして移動します。
@@ -223,45 +224,6 @@ with st.sidebar:
 st.title("Streamlit 青鬼風ゲーム")
 st.caption("鬼から逃げながら鍵を見つけ、屋敷から脱出せよ！")
 
-# ゲームマップと移動キーの表示スタイルをCSSで定義
-st.markdown("""
-<style>
-/* Streamlitのメインブロックの幅を制限し、中央に配置 */
-.main .block-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 1rem;
-}
-
-/* マップを囲むコンテナ */
-.game-map-container {
-    display: flex;
-    justify-content: center;
-    margin: 1rem 0;
-}
-
-/* マップ本体のスタイル */
-.game-map {
-    font-family: monospace;
-    font-size: 24px; /* マップの文字サイズを固定 */
-    line-height: 1.1;
-    white-space: pre;
-    background-color: #0e1117;
-    border-radius: 5px;
-    padding: 5px;
-    display: inline-block;
-    overflow-x: auto; /* 画面が狭い時だけ横スクロール */
-}
-
-.stButton>button {
-    height: 4em;
-    font-size: 1.2em;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-
 # ゲーム状況のメッセージ
 if st.session_state.game_over:
     st.error(st.session_state.message)
@@ -275,7 +237,7 @@ display_map()
 
 # 移動ボタン
 st.write("---")
-st.write("<div style='text-align: center; font-weight: bold;'>移動</div>", unsafe_allow_html=True)
+st.write("**移動**")
 is_control_disabled = st.session_state.game_over or st.session_state.win
 b_col1, b_col2, b_col3, b_col4 = st.columns(4)
 
