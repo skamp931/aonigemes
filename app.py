@@ -5,7 +5,7 @@ import time
 from collections import deque
 
 # --- ゲームの設定 ---
-MAP_WIDTH = 18
+MAP_WIDTH = 16
 MAP_HEIGHT = 15
 WALL = "🧱"
 FLOOR = "⬛"
@@ -307,16 +307,13 @@ with st.sidebar:
         st.write(f"**罠の数: {st.session_state.trap_count}**")
     st.write("---")
     
-    if st.button("リスタート", use_container_width=True):
-        restart_game()
-    
     # --- 一括移動 ---
-    st.write("---")
     st.write("**一括移動** (l:左, r:右, u:上, d:下)")
     command_input = st.text_input("コマンド:", key="command_input", label_visibility="collapsed")
     if st.button("一括移動を実行"):
         handle_bulk_move(command_input)
         st.rerun()
+    st.write("---")
 
     with st.expander("ゲームのルール (Q&A)", expanded=False):
         st.markdown("""
@@ -339,6 +336,7 @@ with st.sidebar:
         """)
 
 # --- メイン画面 ---
+st.markdown("<style>h1{font-size: 1.8rem;}</style>", unsafe_allow_html=True)
 st.title("Streamlit 青鬼風ゲーム")
 st.caption("鬼から逃げながら鍵を見つけ、屋敷から脱出せよ！")
 
@@ -353,26 +351,30 @@ st.write("---")
 st.write("**操作**")
 is_control_disabled = st.session_state.game_over or st.session_state.win
 
-# 移動ボタン
-b_col1, b_col2, b_col3, b_col4 = st.columns(4)
-with b_col1:
+# 移動ボタンと罠ボタンを横一列に
+cols = st.columns(5)
+with cols[0]:
     if st.button("◀", use_container_width=True, disabled=is_control_disabled):
         move_player(-1, 0); st.rerun()
-with b_col2:
+with cols[1]:
     if st.button("▲", use_container_width=True, disabled=is_control_disabled):
         move_player(0, -1); st.rerun()
-with b_col3:
+with cols[2]:
     if st.button("▼", use_container_width=True, disabled=is_control_disabled):
         move_player(0, 1); st.rerun()
-with b_col4:
+with cols[3]:
     if st.button("▶", use_container_width=True, disabled=is_control_disabled):
         move_player(1, 0); st.rerun()
+with cols[4]:
+    if st.session_state.difficulty == "むずかしい":
+        trap_button_disabled = (st.session_state.trap_count <= 0 or st.session_state.trap_pos is not None or is_control_disabled)
+        if st.button("🪤", use_container_width=True, disabled=trap_button_disabled, help="罠を設置"):
+            st.session_state.trap_pos = list(st.session_state.player_pos)
+            st.session_state.trap_count -= 1
+            st.session_state.message = "床に罠を設置した。"
+            st.rerun()
 
-# 罠設置ボタン (「むずかしい」モード限定)
-if st.session_state.difficulty == "むずかしい":
-    trap_button_disabled = (st.session_state.trap_count <= 0 or st.session_state.trap_pos is not None or is_control_disabled)
-    if st.button("🪤 罠を設置", use_container_width=True, disabled=trap_button_disabled):
-        st.session_state.trap_pos = list(st.session_state.player_pos)
-        st.session_state.trap_count -= 1
-        st.session_state.message = "床に罠を設置した。"
-        st.rerun()
+# リスタートボタンを操作キーの下に配置
+st.write("") # ボタンの上のスペース
+if st.button("リスタート", use_container_width=True):
+    restart_game()
