@@ -208,9 +208,7 @@ with st.sidebar:
     with st.expander("ゲームのルール (Q&A)", expanded=True):
         st.markdown("""
         **Q. このゲームの目的は？** A. 鬼（👹）に捕まらずに、鍵（🔑）を見つけて出口（🚪）から脱出することです。
-
         **Q. どうやって操作するの？** A. メイン画面下部の矢印ボタン（◀ ▲ ▼ ▶）をクリックして移動します。
-
         **Q. 難易度の違いは？** A. 鬼の動く速さが変わります。
         - **やさしい**: プレイヤーが2回動くと鬼が1回動きます。
         - **ふつう**: プレイヤーが1回動くと鬼も1回動きます。
@@ -226,29 +224,50 @@ with st.sidebar:
 st.title("Streamlit 青鬼風ゲーム")
 st.caption("鬼から逃げながら鍵を見つけ、屋敷から脱出せよ！")
 
-# ゲームマップの表示スタイルをCSSで定義（PC/スマホ両対応）
+# ゲームマップと移動キーの表示スタイルをCSSで定義
 st.markdown("""
 <style>
+/* Streamlitのメインブロックの幅を調整 */
+.main .block-container {
+    max-width: 700px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* マップを囲むコンテナ */
 .game-map-container {
     display: flex;
     justify-content: center;
-    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
+
+/* マップ本体のスタイル */
 .game-map {
     font-family: monospace;
-    /* 画面幅に応じて文字サイズを調整しつつ、最大サイズを抑える */
-    font-size: clamp(14px, 3vw, 20px); 
+    font-size: 1.5em; /* 固定サイズで見やすく */
     line-height: 1.2;
     white-space: pre;
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 10px;
-    background-color: #0e1117; /* Streamlitのダークテーマに合わせた背景色 */
+    background-color: #0e1117;
     display: inline-block;
-    box-sizing: content-box;
-    /* マップがコンテナからはみ出た場合のみスクロール */
-    overflow: auto; 
+    overflow: auto; /* はみ出した場合のみスクロール */
 }
+
+/* 移動ボタンのコンテナ (スマホでの縦並び防止) */
+div[data-testid="column"] {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.stButton>button {
+    width: 100%;
+    height: 3em;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
