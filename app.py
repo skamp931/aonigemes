@@ -53,7 +53,7 @@ def generate_map(clear_count):
         possible_wall_positions = []
         for y in range(1, MAP_HEIGHT - 1):
             for x in range(1, MAP_WIDTH - 1):
-                 if [x, y] not in [INITIAL_PLAYER_POS, EXIT_POS]: # 鬼の初期位置は後で決める
+                 if [x, y] not in [INITIAL_PLAYER_POS, EXIT_POS]:
                     possible_wall_positions.append([x, y])
         
         num_walls = 30 # 壁の数
@@ -112,7 +112,6 @@ def initialize_game():
 
         st.session_state.player_pos = list(INITIAL_PLAYER_POS)
         
-        # 鬼の初期位置をランダム化
         bottom_right_oni = [MAP_WIDTH - 2, MAP_HEIGHT - 2]
         bottom_left_oni = [1, MAP_HEIGHT - 2]
         st.session_state.oni_pos = random.choice([bottom_right_oni, bottom_left_oni])
@@ -135,10 +134,10 @@ def initialize_game():
 
         if st.session_state.difficulty == "むずかしい":
             st.session_state.trap_count = 1
-            # マップに罠をランダムで1つ配置
             possible_trap_positions = []
             for y in range(1, MAP_HEIGHT - 1):
                 for x in range(1, MAP_WIDTH - 1):
+                    # 罠の候補地を絞る
                     if st.session_state.game_map[y][x] == FLOOR and [x,y] not in [st.session_state.player_pos, st.session_state.oni_pos, st.session_state.key_pos, st.session_state.exit_pos]:
                         possible_trap_positions.append([x, y])
             if possible_trap_positions:
@@ -153,11 +152,10 @@ def display_map():
     px, py = st.session_state.player_pos
     ox, oy = st.session_state.oni_pos
     
-    # プレイヤー設置の罠
     if st.session_state.player_trap_pos:
         tx, ty = st.session_state.player_trap_pos
         if [tx, ty] != [px, py] and [tx, ty] != [ox, oy]: display_map_data[ty][tx] = TRAP
-    # マップ設置の罠
+    
     if st.session_state.map_trap_pos:
         tx, ty = st.session_state.map_trap_pos
         if [tx, ty] != [px, py] and [tx, ty] != [ox, oy]: display_map_data[ty][tx] = TRAP
@@ -201,7 +199,7 @@ def handle_bulk_move(commands):
         elif command == 'u': dy = -1
         elif command == 'd': dy = 1
         else: continue
-        move_player(dx, dy) # 1マス移動のロジックを再利用
+        move_player(dx, dy)
 
 def _move_oni_one_step():
     """鬼をプレイヤーに向かって1マス動かす内部ロジック"""
@@ -209,7 +207,7 @@ def _move_oni_one_step():
     ox, oy = st.session_state.oni_pos
     new_ox, new_oy = ox, oy
     dist_x, dist_y = px - ox, py - oy
-    impassable = [WALL] # 鬼は障害物(OBSTACLE)を無視する
+    impassable = [WALL]
 
     if abs(dist_x) > abs(dist_y):
         if dist_x > 0 and st.session_state.game_map[oy][ox + 1] not in impassable: new_ox += 1
@@ -250,17 +248,19 @@ def move_oni():
 
     difficulty = st.session_state.difficulty
     if difficulty == "やさしい":
-        if st.session_state.turn_count % 2 == 0: _move_oni_one_step()
+        if st.session_state.turn_count % 2 == 0:
+             _move_oni_one_step()
+             check_oni_trap_interaction()
     elif difficulty == "ふつう":
         _move_oni_one_step()
+        check_oni_trap_interaction()
     elif difficulty == "むずかしい":
         _move_oni_one_step()
         if st.session_state.player_pos == st.session_state.oni_pos: check_events(); return
         check_oni_trap_interaction()
         if st.session_state.oni_stopped_turns > 0: return
         _move_oni_one_step()
-    
-    check_oni_trap_interaction()
+        check_oni_trap_interaction()
 
 def check_events():
     """ゲーム内のイベント（捕獲、鍵取得、脱出）を確認する"""
@@ -287,13 +287,13 @@ def check_events():
         else:
             st.session_state.message = "鍵がかかっている...。鍵を探さなければ。"
 
+def force_game_reset():
+    """難易度変更やリスタート時にゲーム状態を強制的にリセットする"""
+    st.session_state.pop('game_started', None)
+    
 def restart_game():
-    """ゲームをリセットするが、クリア回数と難易度は維持する"""
-    clear_count = st.session_state.get('clear_count', 0)
-    difficulty = st.session_state.get('difficulty', 'ふつう')
-    st.session_state.clear()
-    st.session_state.clear_count = clear_count
-    st.session_state.difficulty = difficulty
+    """リスタートボタン用のリセット関数"""
+    force_game_reset()
     st.rerun()
 
 # --- メインのUI ---
@@ -308,7 +308,8 @@ with st.sidebar:
         minutes, seconds = int(elapsed_time // 60), int(elapsed_time % 60)
         st.write(f"**経過時間: {minutes:02d}:{seconds:02d}**")
     st.write("---")
-    st.selectbox("難易度", ("やさしい", "ふつう", "むずかしい"), key='difficulty', disabled=(st.session_state.turn_count > 0))
+    st.selectbox("難易度", ("やさしい", "ふつう", "むずかしい"), key='difficulty', 
+                 disabled=(st.session_state.turn_count > 0), on_change=force_game_reset)
     st.write(f"**クリア回数: {st.session_state.clear_count}**")
     st.write(f"鍵の所持: {'あり' if st.session_state.has_key else 'なし'}")
     if st.session_state.difficulty == "むずかしい":
@@ -336,7 +337,7 @@ with st.sidebar:
 
 # --- メイン画面 ---
 st.markdown("<style>h1{font-size: 1.8rem;}</style>", unsafe_allow_html=True)
-st.title("Streamlit 青鬼風ゲーム")
+st.title("青鬼風ゲーム")
 st.caption("鬼から逃げながら鍵を見つけ、屋敷から脱出せよ！")
 if st.session_state.game_over: st.error(st.session_state.message)
 elif st.session_state.win: st.success(st.session_state.message)
